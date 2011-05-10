@@ -1,0 +1,3 @@
+configure :tests do
+  
+end

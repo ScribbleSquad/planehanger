@@ -1,0 +1,55 @@
+$: << File.expand_path(File.dirname(__FILE__)) + '/app'
+$: << File.expand_path(File.dirname(__FILE__)) + '/config' 
+$: << File.expand_path(File.dirname(__FILE__)) + '/config/environments' 
+
+require 'rubygems'
+require "sinatra" 
+require 'sequel' 
+require 'rake'
+require 'rake/testtask'   
+                           
+
+require 'settings'
+require "development"
+require "production"
+require "testing"
+
+                     
+namespace :db do   
+  
+  desc "Migrate"
+  task :migrate,:env do |t,args|
+    puts "Connecting to: #{settings.connections[args[:env]]}"
+    system "sequel  -E #{settings.connections[args[:env]]} -m ./db/migrations" 
+  end
+    
+ 
+ desc "Migrate to version"
+ task :migrateto , :env,:version  do |t, args|
+   puts "migrate to #{args[:version].to_i}" 
+   puts "Connecting to: #{settings.connections[args[:env]]} migrate to #{args[:version].to_i} "
+   system "sequel -M #{args[:version].to_i} -E #{settings.connections[args[:env]]} -m ./db/migrations"
+ end
+  
+  desc "Reset Database"
+  task :reset  do 
+    system "rm -rf db/cargo.db " 
+    puts "******database destroyed*******" 
+    system "sequel   -E sqlite://db/cargo.db -m ./db/migrations"  
+  end                         
+  
+end        
+
+
+desc "Run all our tests"
+task :test do  
+  
+   Rake::TestTask.new do |t|
+      t.libs << "tests"
+      t.pattern = "./tests/*/*.rb"
+      t.verbose = false    
+      
+    end
+end                             
+
+task :default => :test

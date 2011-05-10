@@ -1,0 +1,10 @@
+source :rubygems
+
+gem 'sinatra'
+gem 'slim' 
+gem 'rack-flash'
+gem 'sequel' 
+gem 'watchr'
+gem 'riot'
+gem 'sqlite3' 
+gem 'cover_me', '>= 1.0.0.rc6', :group => :test
